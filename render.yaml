@@ -3,8 +3,13 @@ services:
     name: freelancex
     runtime: node
     rootDir: .
+<<<<<<< HEAD
     buildCommand: npm install --prefix server && npm install --prefix client && cd client && npm run build
     startCommand: cd server && npm start
+=======
+    buildCommand: npm install --prefix server && npm run build
+    startCommand: npm start
+>>>>>>> 8346464ecdaa8786e93e41dab5d32e766eaf9645
     envVars:
       - key: NODE_ENV
         value: production
