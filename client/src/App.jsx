@@ -16,6 +16,8 @@ import MyProposals from './pages/MyProposals';
 import Earnings from './pages/Earnings';
 import Billing from './pages/Billing';
 import VerifyPhone from './pages/VerifyPhone';
+import HireFreelancers from './pages/HireFreelancers';
+import FreelancerProfile from './pages/FreelancerProfile';
 // Why pages
 import SuccessStories from './pages/why/SuccessStories';
 import HowToHire from './pages/why/HowToHire';
@@ -31,10 +33,11 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
+import Freelancers from './pages/Freelancers';
 import InfoPage from './pages/InfoPage';
+
 import ForgotPassword from './pages/ForgotPassword';
 
-// Placeholder components for old dashboard routes
 const Unauthorized = () => (
   <div className="min-h-screen bg-gray-50 flex items-center justify-center">
     <div className="text-center">
@@ -53,6 +56,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/jobs/:id" element={<><Navbar /><JobDetails /></>} />
+          <Route path="/freelancers" element={<><Navbar /><HireFreelancers /></>} />
+          <Route path="/freelancers/:id" element={<><Navbar /><FreelancerProfile /></>} />
           <Route path="/why-freelancex" element={<><Navbar /><WhyFreelanceX /></>} />
           <Route path="/pricing" element={<><Navbar /><Pricing /></>} />
           {/* Why FreelanceX Pages */}
@@ -72,8 +77,10 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
 
+          <Route path="/freelancers" element={<Freelancers />} />
+
           {/* Route aliases to avoid broken links */}
-          <Route path="/hire" element={<Navigate to="/resources/hire-freelancers" replace />} />
+          <Route path="/hire" element={<Navigate to="/freelancers" replace />} />
           <Route path="/how-to-hire" element={<Navigate to="/why/how-to-hire" replace />} />
           <Route path="/find-work" element={<Navigate to="/why/how-to-find-work" replace />} />
           <Route path="/stories" element={<Navigate to="/why/success-stories" replace />} />

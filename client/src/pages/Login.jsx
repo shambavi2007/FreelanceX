@@ -166,34 +166,6 @@ const Login = () => {
             </div>
           </form>
 
-          {/* Demo Accounts */}
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Demo Accounts</span>
-              </div>
-            </div>
-
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setFormData({ email: 'client@demo.com', password: 'demo123' })}
-                className="btn-secondary text-xs"
-              >
-                Demo Client
-              </button>
-              <button
-                type="button"
-                onClick={() => setFormData({ email: 'freelancer@demo.com', password: 'demo123' })}
-                className="btn-secondary text-xs"
-              >
-                Demo Freelancer
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>

@@ -1,12 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiFileText, FiClock, FiDollarSign, FiCheckCircle, FiXCircle, FiAlertCircle } from 'react-icons/fi';
+import { proposalAPI } from '../services/api';
+import toast from 'react-hot-toast';
 
 const MyProposals = () => {
   const navigate = useNavigate();
+  const [proposals, setProposals] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Placeholder proposals - will be replaced with real API data
-  const [proposals] = useState([]);
+  useEffect(() => {
+    fetchProposals();
+  }, []);
+
+  const fetchProposals = async () => {
+    try {
+      const response = await proposalAPI.getMyProposals();
+      setProposals(response.data?.proposals || []);
+    } catch (error) {
+      toast.error('Failed to load proposals');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -54,7 +70,11 @@ const MyProposals = () => {
           ))}
         </div>
 
-        {proposals.length === 0 ? (
+        {loading ? (
+          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-600 mx-auto"></div>
+          </div>
+        ) : proposals.length === 0 ? (
           <div className="bg-white rounded-lg shadow-sm p-12 text-center">
             <FiFileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-gray-900 mb-2">No proposals yet</h2>
@@ -69,17 +89,19 @@ const MyProposals = () => {
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-1">
                       {getStatusIcon(proposal.status)}
-                      <h3 className="text-lg font-semibold text-gray-900">{proposal.jobTitle}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {proposal.job?.title || 'Job'}
+                      </h3>
                     </div>
                     <p className="text-gray-600 text-sm mb-3 line-clamp-2">{proposal.coverLetter}</p>
                     <div className="flex flex-wrap gap-4 text-sm text-gray-500">
                       <span className="flex items-center space-x-1">
                         <FiDollarSign className="w-4 h-4" />
-                        <span>Bid: ₹{proposal.bidAmount}</span>
+                        <span>Bid: ₹{proposal.proposedBudget}</span>
                       </span>
                       <span className="flex items-center space-x-1">
                         <FiClock className="w-4 h-4" />
-                        <span>{proposal.deliveryTime}</span>
+                        <span>{proposal.deliveryTime} {proposal.deliveryTimeUnit}</span>
                       </span>
                     </div>
                   </div>

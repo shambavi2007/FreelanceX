@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiPlus, FiUser, FiCreditCard, FiPhone, FiSearch, FiFileText, FiDollarSign, FiMessageCircle, FiBriefcase, FiCheckCircle, FiArrowUpRight, FiTarget } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
+import { jobAPI } from '../services/api';
 import Modal from '../components/common/Modal';
 import toast from 'react-hot-toast';
 
@@ -13,7 +14,35 @@ const Dashboard = () => {
     messages: 0,
     earnings: 0
   });
+  const [recentJobs, setRecentJobs] = useState([]);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
+
+  useEffect(() => {
+    fetchStats();
+  }, [user]);
+
+  useEffect(() => {
+    const hasSeen = localStorage.getItem('dashboardOnboardingSeen');
+    if (!hasSeen) setShowOnboardingModal(true);
+  }, []);
+
+  const fetchStats = async () => {
+    if (!user) return;
+    try {
+      if (user.role === 'client') {
+        const response = await jobAPI.getMyJobs();
+        const jobs = response.data?.jobs || [];
+        setRecentJobs(jobs.slice(0, 3));
+        setStats(prev => ({
+          ...prev,
+          jobsPosted: response.data?.pagination?.total || jobs.length,
+          activeContracts: jobs.filter(j => j.status === 'in-progress').length
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to fetch stats:', error);
+    }
+  };
 
   const clientActions = [
     {
@@ -92,13 +121,6 @@ const Dashboard = () => {
       default: return 'bg-gray-100 text-gray-800';
     }
   };
-
-  useEffect(() => {
-    const hasSeen = localStorage.getItem('dashboardOnboardingSeen');
-    if (!hasSeen) {
-      setShowOnboardingModal(true);
-    }
-  }, []);
 
   const growthCards = user?.role === 'client'
     ? [
@@ -243,22 +265,53 @@ const Dashboard = () => {
           <div>
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
             <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="text-center py-8">
-                <FiFileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No recent activity</h3>
-                <p className="text-gray-600 mb-4">
-                  {user?.role === 'client' 
-                    ? 'Start by posting your first job to see activity here.'
-                    : 'Apply to jobs to see your activity here.'
-                  }
-                </p>
-                <Link 
-                  to={user?.role === 'client' ? '/post-job' : '/jobs'} 
-                  className="btn-primary"
-                >
-                  {user?.role === 'client' ? 'Post a Job' : 'Find Jobs'}
-                </Link>
-              </div>
+              {recentJobs.length > 0 ? (
+                <div className="space-y-4">
+                  {recentJobs.map(job => (
+                    <Link
+                      key={job._id}
+                      to={`/jobs/${job._id}`}
+                      className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <FiBriefcase className="w-5 h-5 text-green-600" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-gray-900 truncate">{job.title}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          ₹{job.budget?.min} - ₹{job.budget?.max} · {job.proposals?.length || 0} proposals
+                        </p>
+                      </div>
+                      <span className={`text-xs px-2 py-1 rounded-full flex-shrink-0 ${
+                        job.status === 'active' ? 'bg-green-100 text-green-700' :
+                        job.status === 'in-progress' ? 'bg-blue-100 text-blue-700' :
+                        'bg-gray-100 text-gray-700'
+                      }`}>
+                        {job.status}
+                      </span>
+                    </Link>
+                  ))}
+                  <Link to="/my-jobs" className="block text-center text-sm text-green-600 hover:text-green-700 font-medium pt-2">
+                    View all jobs →
+                  </Link>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <FiFileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No recent activity</h3>
+                  <p className="text-gray-600 mb-4">
+                    {user?.role === 'client'
+                      ? 'Start by posting your first job to see activity here.'
+                      : 'Apply to jobs to see your activity here.'}
+                  </p>
+                  <Link
+                    to={user?.role === 'client' ? '/post-job' : '/jobs'}
+                    className="btn-primary"
+                  >
+                    {user?.role === 'client' ? 'Post a Job' : 'Find Jobs'}
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>

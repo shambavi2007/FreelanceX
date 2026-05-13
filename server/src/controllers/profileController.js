@@ -167,7 +167,65 @@ const updateProfile = async (req, res) => {
   }
 };
 
+// @desc    Get all freelancers (public)
+// @route   GET /api/profile/freelancers
+// @access  Public
+const getFreelancers = async (req, res) => {
+  try {
+    const { search, skill, page = 1, limit = 12 } = req.query;
+
+    const filter = { role: 'freelancer', isActive: true };
+
+    if (skill) filter.skills = { $in: [new RegExp(skill, 'i')] };
+    if (search) filter.$or = [
+      { name: new RegExp(search, 'i') },
+      { bio: new RegExp(search, 'i') },
+      { skills: { $in: [new RegExp(search, 'i')] } }
+    ];
+
+    const freelancers = await User.find(filter)
+      .select('name avatar bio skills experience hourlyRate profileCompleted createdAt')
+      .sort({ profileCompleted: -1, createdAt: -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .lean();
+
+    const total = await User.countDocuments(filter);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        freelancers,
+        pagination: { page: Number(page), limit: Number(limit), total, pages: Math.ceil(total / limit) }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// @desc    Get single freelancer by ID
+// @route   GET /api/profile/freelancers/:id
+// @access  Public
+const getFreelancerById = async (req, res) => {
+  try {
+    const freelancer = await User.findOne({ _id: req.params.id, role: 'freelancer' })
+      .select('name avatar bio skills experience hourlyRate location title rating createdAt')
+      .lean();
+
+    if (!freelancer) {
+      return res.status(404).json({ success: false, error: 'Freelancer not found' });
+    }
+
+    res.status(200).json({ success: true, data: { freelancer } });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
 module.exports = {
   getProfile,
-  updateProfile
+  updateProfile,
+  getFreelancers,
+  getFreelancerById
 };

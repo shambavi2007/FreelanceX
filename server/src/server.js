@@ -5,12 +5,14 @@ const morgan = require("morgan");
 const compression = require("compression");
 const mongoSanitize = require("express-mongo-sanitize");
 const rateLimit = require("express-rate-limit");
+const path = require("path");
 require("dotenv").config({ path: require("path").resolve(__dirname, "../.env") });
 
 const connectDB = require("./config/database");
 const authRoutes = require("./routes/authRoutes");
 const profileRoutes = require("./routes/profileRoutes");
 const jobRoutes = require("./routes/jobRoutes");
+const proposalRoutes = require("./routes/proposalRoutes");
 const { errorHandler, notFound } = require("./middleware/errorMiddleware");
 
 const app = express();
@@ -32,7 +34,9 @@ app.use("/api/", limiter);
 // CORS
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: process.env.NODE_ENV === "production"
+      ? process.env.CLIENT_URL
+      : "http://localhost:3000",
     credentials: true,
   })
 );
@@ -56,11 +60,21 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/jobs", jobRoutes);
+app.use("/api/proposals", proposalRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "OK" });
 });
+
+// Serve React frontend in production
+if (process.env.NODE_ENV === "production") {
+  const clientBuildPath = path.join(__dirname, "../../client/dist");
+  app.use(express.static(clientBuildPath));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(clientBuildPath, "index.html"));
+  });
+}
 
 // Error handling
 app.use(notFound);

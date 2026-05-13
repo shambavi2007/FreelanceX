@@ -1,11 +1,15 @@
 const express = require('express');
-const { getProfile, updateProfile } = require('../controllers/profileController');
+const { getProfile, updateProfile, getFreelancers, getFreelancerById } = require('../controllers/profileController');
 const { protect } = require('../middleware/authMiddleware');
 const { upload, handleMulterError } = require('../middleware/uploadMiddleware');
 
 const router = express.Router();
 
-// All routes are protected
+// @route   GET /api/profile/freelancers (public - no auth required)
+router.get('/freelancers', getFreelancers);
+router.get('/freelancers/:id', getFreelancerById);
+
+// All routes below are protected
 router.use(protect);
 
 // @route   GET /api/profile/me

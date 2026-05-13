@@ -69,14 +69,7 @@ const getJobs = async (req, res) => {
 const getJob = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id)
-      .populate('client', 'name companyName companyDescription avatar createdAt')
-      .populate({
-        path: 'proposals',
-        populate: {
-          path: 'freelancer',
-          select: 'name avatar skills experience hourlyRate'
-        }
-      });
+      .populate('client', 'name companyName companyDescription avatar createdAt');
 
     if (!job) {
       return res.status(404).json({
@@ -93,7 +86,7 @@ const getJob = async (req, res) => {
     console.error('Get job error:', error.message);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch job'
+      error: error.message || 'Failed to fetch job'
     });
   }
 };

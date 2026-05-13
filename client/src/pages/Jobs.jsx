@@ -325,9 +325,9 @@ const Jobs = () => {
               <div className="space-y-6">
                 {jobs.map(job => (
                   <JobCard
-                    key={job.id}
+                    key={job._id}
                     job={job}
-                    saved={savedJobs.includes(job.id)}
+                    saved={savedJobs.includes(job._id)}
                     onToggleSave={toggleSaveJob}
                     onQuickView={setQuickViewJob}
                   />
@@ -384,7 +384,7 @@ const Jobs = () => {
             <h3 className="text-2xl font-semibold text-gray-900 mb-3">{quickViewJob.title}</h3>
             <div className="flex flex-wrap gap-3 text-sm mb-4">
               <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700">{quickViewJob.experienceLevel}</span>
-              <span className="px-3 py-1 rounded-full bg-green-100 text-green-700">Budget: ₹{quickViewJob.budget}</span>
+              <span className="px-3 py-1 rounded-full bg-green-100 text-green-700">Budget: ₹{quickViewJob.budget?.min} - ₹{quickViewJob.budget?.max}</span>
               <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-700">{quickViewJob.proposals || 0} proposals</span>
             </div>
             <p className="text-gray-700 leading-7 mb-5">{quickViewJob.description}</p>
@@ -394,15 +394,15 @@ const Jobs = () => {
               ))}
             </div>
             <div className="flex gap-3">
-              <Link to={`/jobs/${quickViewJob.id}`} className="btn-primary">
+              <Link to={`/jobs/${quickViewJob._id || quickViewJob.id}`} className="btn-primary">
                 Open Full Details
               </Link>
               <button
                 type="button"
-                onClick={() => toggleSaveJob(quickViewJob.id)}
+                onClick={() => toggleSaveJob(quickViewJob._id || quickViewJob.id)}
                 className="btn-secondary"
               >
-                {savedJobs.includes(quickViewJob.id) ? 'Saved' : 'Save Job'}
+                {savedJobs.includes(quickViewJob._id || quickViewJob.id) ? 'Saved' : 'Save Job'}
               </button>
             </div>
           </div>
@@ -460,8 +460,8 @@ const JobCard = ({ job, saved, onToggleSave, onQuickView }) => {
     <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 p-6 border border-gray-100">
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
-          <Link 
-            to={`/jobs/${job.id}`}
+          <Link
+            to={`/jobs/${job.id || job._id}`}
             className="text-xl font-semibold text-gray-900 hover:text-green-600 transition-colors duration-200"
           >
             {job.title}
@@ -477,7 +477,7 @@ const JobCard = ({ job, saved, onToggleSave, onQuickView }) => {
             </span>
           </div>
         </div>
-        <button onClick={() => onToggleSave(job.id)} className={`transition-colors duration-200 ${saved ? 'text-green-600' : 'text-gray-400 hover:text-green-600'}`}>
+        <button onClick={() => onToggleSave(job._id)} className={`transition-colors duration-200 ${saved ? 'text-green-600' : 'text-gray-400 hover:text-green-600'}`}>
           <FiBookmark className="w-5 h-5" />
         </button>
       </div>
@@ -506,9 +506,7 @@ const JobCard = ({ job, saved, onToggleSave, onQuickView }) => {
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-1 text-green-600 font-semibold">
             <FiDollarSign className="w-4 h-4" />
-            <span>
-              ₹{job.budget}
-            </span>
+            <span>₹{job.budget?.min} - ₹{job.budget?.max}</span>
           </div>
           <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
             {job.experienceLevel}
@@ -527,7 +525,7 @@ const JobCard = ({ job, saved, onToggleSave, onQuickView }) => {
             Quick View
           </button>
           <Link
-            to={`/jobs/${job.id}`}
+            to={`/jobs/${job._id}`}
             className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center space-x-1"
           >
             <FiEye className="w-4 h-4" />

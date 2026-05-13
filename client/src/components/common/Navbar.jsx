@@ -64,11 +64,23 @@ const Navbar = () => {
     }
   };
 
-  const navItems = [
-    { name: 'Hire Freelancers', href: '/resources/hire-freelancers' },
-    { name: 'Find Work', href: '/jobs' },
-    { name: 'Pricing', href: '/pricing' }
-  ];
+  const navItems = isAuthenticated
+    ? user?.role === 'client'
+      ? [
+          { name: 'Hire Freelancers', href: '/freelancers' },
+          { name: 'Post a Job', href: '/post-job' },
+          { name: 'My Jobs', href: '/my-jobs' }
+        ]
+      : [
+          { name: 'Find Work', href: '/jobs' },
+          { name: 'My Proposals', href: '/my-proposals' },
+          { name: 'Earnings', href: '/earnings' }
+        ]
+    : [
+        { name: 'Hire Freelancers', href: '/freelancers' },
+        { name: 'Find Work', href: '/jobs' },
+        { name: 'Pricing', href: '/pricing' }
+      ];
 
   return (
     <nav className="sticky top-0 left-0 right-0 z-50 bg-white shadow-md">

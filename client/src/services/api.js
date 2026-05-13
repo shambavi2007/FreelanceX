@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -104,127 +104,17 @@ export const profileAPI = {
 
 // Job API methods
 export const jobAPI = {
-  // Get all jobs with filters (MockAPI for demo, fallback to real API)
   getJobs: async (params = {}) => {
-    try {
-      // Use MockAPI for demo purposes - REPLACE WITH YOUR ACTUAL MOCKAPI URL
-      const mockApiUrl = 'https://693a8ead9b80ba7262ca6893.mockapi.io/FreelanceX';
-      const response = await axios.get(mockApiUrl);
-      
-      // Apply client-side filtering if needed
-      let jobs = response.data;
-      
-      if (params.category) {
-        jobs = jobs.filter(job => job.category === params.category);
-      }
-      
-      if (params.experienceLevel) {
-        jobs = jobs.filter(job => job.experienceLevel === params.experienceLevel);
-      }
-      
-      if (params.search) {
-        jobs = jobs.filter(job => 
-          job.title.toLowerCase().includes(params.search.toLowerCase()) ||
-          job.description.toLowerCase().includes(params.search.toLowerCase())
-        );
-      }
-      
-      return {
-        success: true,
-        data: {
-          jobs: response.data,
-          pagination: {
-            page: 1,
-            limit: response.data.length,
-            total: response.data.length,
-            pages: 1
-          }
-        }
-      };
-    } catch (error) {
-      console.error('MockAPI failed, using fallback data:', error);
-      // Return fallback data if MockAPI fails
-      const fallbackJobs = [
-        {
-          id: '1',
-          title: 'React Frontend Developer',
-          category: 'Web Development',
-          description: 'Build a modern e-commerce platform with React',
-          budget: 25000,
-          duration: '2 months',
-          experienceLevel: 'Intermediate',
-          skills: ['React', 'JavaScript', 'CSS'],
-          location: 'Remote',
-          postedAt: new Date().toISOString(),
-          clientName: 'John Doe',
-          proposals: 5
-        },
-        {
-          id: '2',
-          title: 'Node.js Backend Developer',
-          category: 'Web Development',
-          description: 'Create RESTful APIs for mobile application',
-          budget: 18000,
-          duration: '1 month',
-          experienceLevel: 'Expert',
-          skills: ['Node.js', 'Express', 'MongoDB'],
-          location: 'Remote',
-          postedAt: new Date().toISOString(),
-          clientName: 'Jane Smith',
-          proposals: 8
-        }
-      ];
-      
-      return {
-        success: true,
-        data: {
-          jobs: fallbackJobs,
-          pagination: {
-            page: 1,
-            limit: fallbackJobs.length,
-            total: fallbackJobs.length,
-            pages: 1
-          }
-        }
-      };
-    }
+    const queryString = new URLSearchParams(params).toString();
+    const response = await api.get(`/jobs?${queryString}`);
+    return response.data;
   },
 
-  // Get single job
   getJob: async (id) => {
-    try {
-      // Use MockAPI for demo - REPLACE WITH YOUR ACTUAL MOCKAPI URL
-      const mockApiUrl = `https://693a8ead9b80ba7262ca6893.mockapi.io/FreelanceX/${id}`;
-      const response = await axios.get(mockApiUrl);
-      return {
-        success: true,
-        data: { job: response.data }
-      };
-    } catch (error) {
-      // Return fallback data if MockAPI fails
-      return {
-        success: true,
-        data: {
-          job: {
-            id: id,
-            title: 'Sample Job',
-            category: 'Web Development',
-            description: 'This is a sample job description',
-            budget: 15000,
-            duration: '1 month',
-            experienceLevel: 'Intermediate',
-            skills: ['JavaScript', 'React'],
-            location: 'Remote',
-            postedAt: new Date().toISOString(),
-            clientName: 'Sample Client',
-            proposals: 3
-          }
-        }
-      };
-    }
+    const response = await api.get(`/jobs/${id}`);
+    return response.data;
   },
 
-  // Create new job (Client only)
   createJob: async (formData) => {
     const response = await api.post('/jobs', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
@@ -232,22 +122,51 @@ export const jobAPI = {
     return response.data;
   },
 
-  // Update job
   updateJob: async (id, jobData) => {
     const response = await api.put(`/jobs/${id}`, jobData);
     return response.data;
   },
 
-  // Delete job
   deleteJob: async (id) => {
     const response = await api.delete(`/jobs/${id}`);
     return response.data;
   },
 
-  // Get user's jobs
   getMyJobs: async (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
     const response = await api.get(`/jobs/my/jobs?${queryString}`);
+    return response.data;
+  }
+};
+
+// Freelancer API methods
+export const freelancerAPI = {
+  getFreelancers: async (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    const response = await api.get(`/profile/freelancers?${queryString}`);
+    return response.data;
+  }
+};
+
+// Proposal API methods
+export const proposalAPI = {
+  submitProposal: async (data) => {
+    const response = await api.post('/proposals', data);
+    return response.data;
+  },
+
+  getMyProposals: async () => {
+    const response = await api.get('/proposals/my');
+    return response.data;
+  },
+
+  getJobProposals: async (jobId) => {
+    const response = await api.get(`/proposals/job/${jobId}`);
+    return response.data;
+  },
+
+  updateProposalStatus: async (proposalId, status) => {
+    const response = await api.put(`/proposals/${proposalId}`, { status });
     return response.data;
   }
 };
