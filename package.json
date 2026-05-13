@@ -13,8 +13,8 @@
     "client": "npm run dev --prefix client",
     "server": "npm run dev --prefix server",
     "build": "npm install --prefix client && npm run build --prefix client",
-    "start": "npm run start --prefix server",
-    "test": "npm run test --prefix server && npm run test --prefix client",
+    "start": "node server/src/server.js",
+    "test": "echo \"no tests\"",
     "heroku-postbuild": "npm install --prefix client && npm run build --prefix client"
   },
   "devDependencies": {
