@@ -1,4 +1,4 @@
-# 🚀 FreelanceX – Professional Freelancer Marketplace
+# FreelanceX – Professional Freelancer Marketplace
 
 A full-stack MERN-based freelancing platform that connects clients with talented freelancers. FreelanceX enables businesses to post projects, hire skilled professionals, and manage freelance work efficiently, while freelancers can discover opportunities, submit proposals, and grow their careers.
 
