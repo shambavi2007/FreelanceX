@@ -1,4 +1,4 @@
-<img width="1919" height="1029" alt="Screenshot 2026-05-05 141753" src="https://github.com/user-attachments/assets/88435e43-aaf5-4a10-b02e-e14ed77b9f6e" /># 🚀 FreelanceX – Professional Freelancer Marketplace
+# 🚀 FreelanceX – Professional Freelancer Marketplace
 
 A full-stack MERN-based freelancing platform that connects clients with talented freelancers. FreelanceX enables businesses to post projects, hire skilled professionals, and manage freelance work efficiently, while freelancers can discover opportunities, submit proposals, and grow their careers.
 
@@ -197,12 +197,6 @@ Backend: http://localhost:5000
 ## 🤝 Contributing
 
 Contributions are welcome. Feel free to fork the repository, create a feature branch, and submit a pull request.
-
----
-
-## 📜 License
-
-This project is licensed under the MIT License.
 
 ---
 
